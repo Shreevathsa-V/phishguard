@@ -30,4 +30,8 @@ build/
 *.log
 
 # ---- Credentials ----
-app/credentials.json
+backend/app/credentials.json
+
+
+backend/data/enron_spam_data.csv
+backend/data/spam_assassin.csv
