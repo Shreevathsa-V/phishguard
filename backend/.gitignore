@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual environment
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Model and tokenizer files
+saved/
+*.h5
+*.keras
+*.json
+
+# SQLite DB
+*.db
+
+# Logs
+*.log
+
+# VSCode / macOS / misc
+.vscode/
+.DS_Store
+.idea/
