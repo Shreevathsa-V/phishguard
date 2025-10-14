@@ -1,0 +1,27 @@
+# Python / FastAPI backend
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.env
+.venv/
+venv/
+*.db
+*.sqlite3
+*.log
+.DS_Store
+/secrets.json
+/tokenized.json
+/credentials.json
+
+# Data
+/data/
+*/data/
+saved/
+*.h5
+*.pkl
+*.csv
+*.jsonl
