@@ -1,24 +1,27 @@
-from sqlmodel import SQLModel, Field, Column, JSON
-from typing import Optional
+from beanie import Document
 from datetime import datetime
+from typing import Optional, Dict
 
-
-class User(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+class User(Document):
     username: str
     email: str
     full_name: Optional[str] = None
     hashed_password: str
-    gmail_credentials: Optional[dict] = Field(sa_column=Column(JSON))
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    gmail_credentials: Optional[Dict] = None
+    created_at: datetime = datetime.utcnow()
+
+    class Settings:
+        name = "users"
 
 
-class Email(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="user.id")
+class Email(Document):
+    user_id: str
     subject: Optional[str] = None
     sender: Optional[str] = None
     snippet: Optional[str] = None
     score: float = 0.0
     label: int = 0  # 0 = safe, 1 = phishing
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = datetime.utcnow()
+
+    class Settings:
+        name = "emails"

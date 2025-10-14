@@ -1,11 +1,16 @@
-from sqlmodel import SQLModel, create_engine, Session, select
 import os
+import motor.motor_asyncio
+from beanie import init_beanie
+from app.models import User, Email
+from dotenv import load_dotenv
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///phishguard.db")
-engine = create_engine(DATABASE_URL, echo=False)
+load_dotenv()
 
-def init_db():
-    SQLModel.metadata.create_all(engine)
+MONGO_URI = os.getenv("DATABASE_URL")
+DB_NAME = os.getenv("DB_NAME", "phishguard")
 
-def get_session():
-    return Session(engine)
+client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
+db = client[DB_NAME]
+
+async def init_db():
+    await init_beanie(database=db, document_models=[User, Email])

@@ -1,67 +1,55 @@
 import os
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-# Correct import: Need func for SQL aggregation
-from sqlmodel import select, Session, func 
-
-from app.db import init_db, get_session
-# Ensure get_current_user is imported (its definition is in auth.py, which was also corrected)
+from app.db import init_db
 from app.auth import register_user, authenticate_user, create_token_for_user, get_current_user
-from app.schemas import UserCreate, LoginRequest, TokenResponse, GmailScanRequest
+from app.schemas import UserCreate, LoginRequest, TokenResponse
 from app.oauth_gmail import router as oauth_router
+from app.models import Email
 from app.gmail_service import fetch_messages_for_user
 from app.ml_utils import predict_texts, load_model, load_tokenizer
 from app.email_alert import send_alert
-from app.models import Email, User
 
-# Load model/tokenizer globals
 MODEL_PATH = os.getenv("MODEL_PATH", "saved/model.keras")
 TOKENIZER_PATH = os.getenv("TOKENIZER_PATH", "saved/tokenizer.json")
 MAX_LEN = int(os.getenv("MAX_LEN", "200"))
 
-model = None
-tokenizer = None
-
-app = FastAPI(title="PhishGuard Pro", version="1.0.0")
+app = FastAPI(title="PhishGuard Pro", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 @app.on_event("startup")
-def on_startup():
+async def on_startup():
+    await init_db()
     global model, tokenizer
-    init_db()
-    # NOTE: Uncomment these two lines once you have successfully trained your ML model 
-    # using the corrected train.py script and saved the files.
     model = load_model(MODEL_PATH)
     tokenizer = load_tokenizer(TOKENIZER_PATH)
 
-# include OAuth router
 app.include_router(oauth_router)
 
-# ---------- AUTH ----------
 @app.post("/auth/register", response_model=dict)
-def api_register(req: UserCreate):
-    user = register_user(req)
-    return {"email": user.email, "id": user.id}
+async def api_register(req: UserCreate):
+    user = await register_user(req)
+    return {"email": user.email, "id": str(user.id)}
 
 @app.post("/auth/login", response_model=TokenResponse)
-def api_login(req: LoginRequest):
-    user = authenticate_user(req.email, req.password)
+async def api_login(req: LoginRequest):
+    user = await authenticate_user(req.email, req.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_token_for_user(user)
     return {"access_token": token, "token_type": "bearer"}
 
 @app.get("/auth/me")
-def api_me(current_user=Depends(get_current_user)):
+async def api_me(current_user=Depends(get_current_user)):
     return {
-        "id": current_user.id,
+        "id": str(current_user.id),
         "email": current_user.email,
         "username": current_user.username,
         "full_name": current_user.full_name,
