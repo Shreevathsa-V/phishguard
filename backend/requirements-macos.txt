@@ -1,9 +1,8 @@
-# === Core Frameworks ===
 fastapi[all]==0.119.0
 uvicorn[standard]==0.30.6
 
-# === Machine Learning ===
-tensorflow==2.15.0
+tensorflow-macos==2.15.0
+tensorflow-metal==1.1.0
 keras==2.15.0
 ml-dtypes==0.2.0
 tensorboard==2.15.2
@@ -13,12 +12,10 @@ scikit-learn==1.7.2
 scipy==1.15.3
 pandas==2.3.3
 
-# === MongoDB & ODM ===
 motor==3.7.1
 beanie==2.0.0
 pymongo==4.15.3
 
-# === Auth & Security ===
 python-dotenv==1.1.1
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.20
@@ -26,20 +23,17 @@ email-validator==2.3.0
 itsdangerous==2.2.0
 pydantic[email]==2.12.2
 
-# === Google OAuth & Gmail APIs ===
 google-auth==2.41.1
 google-auth-oauthlib==1.2.2
 google-api-python-client==2.184.0
 google-auth-httplib2==0.2.0
 
-# === Utilities ===
 requests==2.32.3
 httpx==0.28.1
 rich==14.2.0
 python-dateutil==2.9.0.post0
 dnspython==2.8.0
 
-# === Optional performance enhancements ===
 uvloop==0.21.0
 httptools==0.7.1
 watchfiles==1.1.1
